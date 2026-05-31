@@ -2,7 +2,7 @@ import api from './api';
 
 export const pacientesService = {
   getAll() {
-    return api.get('/api/patients').then(res => res.data);
+    return api.get('/patients').then(res => res.data);
   },
 
   getById(id) {
@@ -10,7 +10,7 @@ export const pacientesService = {
   },
 
   create(data) {
-    return api.post('/api/patients', data).then(res => res.data);
+    return api.post('/patients', data).then(res => res.data);
   },
 
   update(id, data) {

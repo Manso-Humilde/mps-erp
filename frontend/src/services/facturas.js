@@ -2,7 +2,7 @@ import api from './api';
 
 export const facturasService = {
   getPacientes() {
-    return api.get('/api/invoices/patient').then(res => res.data);
+    return api.get('/invoices/patient').then(res => res.data);
   },
 
   createFacturaPaciente(consultationId) {
@@ -10,11 +10,11 @@ export const facturasService = {
   },
 
   getARS() {
-    return api.get('/api/invoices/ars').then(res => res.data);
+    return api.get('/invoices/ars').then(res => res.data);
   },
 
   generateARSInvoices(periodo) {
-    return api.post('/api/invoices/ars/generate', { periodo }).then(res => res.data);
+    return api.post('/invoices/ars/generate', { periodo }).then(res => res.data);
   },
 
   async generarReporteARS(year, month) {

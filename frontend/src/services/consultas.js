@@ -2,7 +2,7 @@ import api from './api';
 
 export const consultasService = {
   async getAll() {
-    return api.get('/api/consultations').then(res => res.data);
+    return api.get('/consultations').then(res => res.data);
   },
 
   getById(id) {
@@ -10,6 +10,6 @@ export const consultasService = {
   },
 
   create(data) {
-    return api.post('/api/consultations', data).then(res => res.data);
+    return api.post('/consultations', data).then(res => res.data);
   }
 };
