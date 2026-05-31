@@ -30,7 +30,7 @@ public class AuthController {
             // Crear cookie httpOnly
             Cookie cookie = new Cookie("JWT_TOKEN", token);
             cookie.setHttpOnly(true);
-            cookie.setSecure(false);  // true en producción con HTTPS
+            cookie.setSecure(true);  // true en producción con HTTPS
             cookie.setPath("/");
             cookie.setMaxAge(86400);  // 24 horas
             cookie.setAttribute("SameSite", "Lax");  // ← Agrega esto
