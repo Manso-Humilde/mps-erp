@@ -1,0 +1,180 @@
+-- mps_erp_db ENTERPRISE SCHEMA
+-- PostgreSQL 15+ compatible
+
+-- EXTENSIONS
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- ENUMS
+DO $$ BEGIN
+    CREATE TYPE user_role AS ENUM ('SUPER_ADMIN', 'ADMIN_CONTABLE', 'MEDICO', 'ASISTENTE');
+    CREATE TYPE ecf_type AS ENUM ('E31', 'E32', 'E33', 'E34', 'E41', 'E43', 'E44', 'E45');
+    CREATE TYPE document_status AS ENUM ('DRAFT', 'ISSUED', 'APPROVED', 'REJECTED', 'CANCELLED');
+    CREATE TYPE payment_method AS ENUM ('CASH', 'CARD', 'TRANSFER', 'CHECK', 'ARS_CLAIM');
+    CREATE TYPE account_type AS ENUM ('ASSET', 'LIABILITY', 'EQUITY', 'REVENUE', 'EXPENSE');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+-- 1. TENANCY & SECURITY
+CREATE TABLE doctors (
+    id BIGSERIAL PRIMARY KEY,
+    rnc_cedula VARCHAR(11) UNIQUE NOT NULL,
+    nombre_comercial VARCHAR(255) NOT NULL,
+    razon_social VARCHAR(255),
+    especialidad VARCHAR(100),
+    telefono VARCHAR(20),
+    email VARCHAR(255),
+    direccion TEXT,
+    logo_url TEXT,
+    config_fiscal JSONB DEFAULT '{}',
+    activo BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE users (
+    id BIGSERIAL PRIMARY KEY,
+    tenant_id BIGINT NOT NULL REFERENCES doctors(id),
+    email VARCHAR(255) NOT NULL,
+    password_hash TEXT NOT NULL,
+    role user_role NOT NULL,
+    nombre_completo VARCHAR(255) NOT NULL,
+    activo BOOLEAN DEFAULT true,
+    last_login TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(tenant_id, email)
+);
+
+-- 2. FISCAL MODULE (DGII)
+CREATE TABLE ncf_sequences (
+    id BIGSERIAL PRIMARY KEY,
+    tenant_id BIGINT NOT NULL REFERENCES doctors(id),
+    tipo_ecf ecf_type NOT NULL,
+    secuencia_actual BIGINT NOT NULL DEFAULT 1,
+    secuencia_final BIGINT NOT NULL,
+    fecha_vencimiento DATE,
+    activo BOOLEAN DEFAULT true,
+    UNIQUE(tenant_id, tipo_ecf)
+);
+
+CREATE TABLE fiscal_documents (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id BIGINT NOT NULL REFERENCES doctors(id),
+    ncf VARCHAR(13) UNIQUE NOT NULL,
+    tipo_ecf ecf_type NOT NULL,
+    rnc_emisor VARCHAR(11) NOT NULL,
+    rnc_receptor VARCHAR(11),
+    monto_total DECIMAL(18, 2) NOT NULL,
+    monto_itbis DECIMAL(18, 2) DEFAULT 0.00,
+    monto_exento DECIMAL(18, 2) DEFAULT 0.00,
+    xml_content TEXT,
+    signature TEXT,
+    track_id VARCHAR(100),
+    estado document_status DEFAULT 'DRAFT',
+    mensaje_dgii TEXT,
+    fecha_emision TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. MEDICAL & ARS MODULE
+CREATE TABLE ars (
+    id BIGSERIAL PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    rnc VARCHAR(11) UNIQUE NOT NULL,
+    codigo_prestador VARCHAR(50),
+    activo BOOLEAN DEFAULT true
+);
+
+CREATE TABLE ars_plans (
+    id BIGSERIAL PRIMARY KEY,
+    ars_id BIGINT NOT NULL REFERENCES ars(id),
+    nombre_plan VARCHAR(100) NOT NULL,
+    descripcion TEXT
+);
+
+CREATE TABLE coverage_rules (
+    id BIGSERIAL PRIMARY KEY,
+    plan_id BIGINT NOT NULL REFERENCES ars_plans(id),
+    tipo_servicio VARCHAR(100) NOT NULL,
+    porcentaje_cobertura DECIMAL(5, 2) NOT NULL,
+    monto_fijo_copago DECIMAL(18, 2),
+    requiere_autorizacion BOOLEAN DEFAULT false
+);
+
+CREATE TABLE patients (
+    id BIGSERIAL PRIMARY KEY,
+    tenant_id BIGINT NOT NULL REFERENCES doctors(id),
+    nombre_completo VARCHAR(255) NOT NULL,
+    tipo_identificacion VARCHAR(20) NOT NULL,
+    numero_identificacion VARCHAR(20) NOT NULL,
+    ars_id BIGINT REFERENCES ars(id),
+    ars_plan_id BIGINT REFERENCES ars_plans(id),
+    numero_seguro VARCHAR(50),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(tenant_id, numero_identificacion)
+);
+
+CREATE TABLE consultations (
+    id BIGSERIAL PRIMARY KEY,
+    tenant_id BIGINT NOT NULL REFERENCES doctors(id),
+    patient_id BIGINT NOT NULL REFERENCES patients(id),
+    fecha_consulta TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    diagnostico TEXT,
+    monto_total DECIMAL(18, 2) NOT NULL,
+    monto_cubierto_ars DECIMAL(18, 2) DEFAULT 0.00,
+    monto_copago DECIMAL(18, 2) NOT NULL,
+    autorizacion_no VARCHAR(50),
+    estado VARCHAR(50) DEFAULT 'COMPLETED',
+    invoice_id UUID REFERENCES fiscal_documents(id)
+);
+
+-- 4. ACCOUNTING MODULE (ERP)
+CREATE TABLE chart_of_accounts (
+    id BIGSERIAL PRIMARY KEY,
+    tenant_id BIGINT NOT NULL REFERENCES doctors(id),
+    codigo VARCHAR(20) NOT NULL,
+    nombre VARCHAR(255) NOT NULL,
+    tipo account_type NOT NULL,
+    padre_id BIGINT REFERENCES chart_of_accounts(id),
+    es_detalle BOOLEAN DEFAULT true,
+    UNIQUE(tenant_id, codigo)
+);
+
+CREATE TABLE journal_entries (
+    id BIGSERIAL PRIMARY KEY,
+    tenant_id BIGINT NOT NULL REFERENCES doctors(id),
+    fecha DATE NOT NULL,
+    descripcion TEXT,
+    referencia VARCHAR(100),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE journal_lines (
+    id BIGSERIAL PRIMARY KEY,
+    entry_id BIGINT NOT NULL REFERENCES journal_entries(id) ON DELETE CASCADE,
+    account_id BIGINT NOT NULL REFERENCES chart_of_accounts(id),
+    debe DECIMAL(18, 2) DEFAULT 0.00,
+    haber DECIMAL(18, 2) DEFAULT 0.00,
+    CHECK (debe >= 0 AND haber >= 0)
+);
+
+-- 5. AUDIT MODULE
+CREATE TABLE audit_logs (
+    id BIGSERIAL PRIMARY KEY,
+    tenant_id BIGINT,
+    user_id BIGINT,
+    accion VARCHAR(100) NOT NULL,
+    entidad VARCHAR(100) NOT NULL,
+    entidad_id VARCHAR(100),
+    datos_anteriores JSONB,
+    datos_nuevos JSONB,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- INDEXES FOR PERFORMANCE
+CREATE INDEX idx_fiscal_tenant ON fiscal_documents(tenant_id, fecha_emision);
+CREATE INDEX idx_audit_tenant ON audit_logs(tenant_id, created_at);
+CREATE INDEX idx_consult_patient ON consultations(patient_id);
+CREATE INDEX idx_journal_fecha ON journal_entries(tenant_id, fecha);
