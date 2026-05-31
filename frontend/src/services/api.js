@@ -1,15 +1,16 @@
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+// Reemplaza la línea de API_BASE_URL por:
+const API_BASE_URL = 'https://mps-erp-backend.onrender.com';
+//const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 30000,
-  withCredentials: true,  // ← Enviar cookies automáticamente
+  baseURL: `${API_BASE_URL}/api`,  // ← El /api se agrega aquí
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
   }
-})
+});
 
 // Request interceptor - ya no necesitas enviar token manualmente
 api.interceptors.request.use(
