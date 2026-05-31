@@ -19,14 +19,11 @@ import Toast from 'primevue/toast';
 import { useAuthStore } from './stores/auth';
 
 const app = createApp(App);
-
 const pinia = createPinia();
 
 app.use(pinia);
 app.use(router);
-
 app.use(ToastService);
-
 app.use(PrimeVue, {
     theme: {
         preset: Aura,
@@ -45,10 +42,13 @@ app.component('Password', Password);
 app.component('Button', Button);
 app.component('Toast', Toast);
 
-// ✅ Cargar auth ANTES de montar la app
+// ✅ Cargar auth ANTES de montar la app (sin top-level await)
 const authStore = useAuthStore();
-
-await authStore.checkAuth();
-
-// ✅ Montar app
-app.mount('#app');
+authStore.checkAuth().then(() => {
+    // ✅ Montar app solo después de cargar auth
+    app.mount('#app');
+}).catch((error) => {
+    console.error('Error loading auth:', error);
+    // Aún así montar la app para no dejar la pantalla en blanco
+    app.mount('#app');
+});
