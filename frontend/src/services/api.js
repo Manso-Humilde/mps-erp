@@ -1,16 +1,15 @@
 import axios from 'axios'
 
-// Reemplaza la línea de API_BASE_URL por:
-const API_BASE_URL = 'https://mps-erp-backend.onrender.com';
-//const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+// URL del backend en Render (CORREGIDA)
+const API_BASE_URL = 'https://mps-erp.onrender.com'
 
 const api = axios.create({
-   baseURL: `${API_BASE_URL}/api`,
-   withCredentials: true,
-   headers: {
-     'Content-Type': 'application/json'
-   }
- })
+  baseURL: `${API_BASE_URL}/api`,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
 
 // Request interceptor - ya no necesitas enviar token manualmente
 api.interceptors.request.use(
