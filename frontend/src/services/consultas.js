@@ -6,7 +6,7 @@ export const consultasService = {
   },
 
   getById(id) {
-    return api.get(`/api/consultations/${id}`).then(res => res.data);
+    return api.get(`/consultations/${id}`).then(res => res.data);
   },
 
   create(data) {

@@ -6,7 +6,7 @@ export const pacientesService = {
   },
 
   getById(id) {
-    return api.get(`/api/patients/${id}`).then(res => res.data);
+    return api.get(`/patients/${id}`).then(res => res.data);
   },
 
   create(data) {
@@ -14,6 +14,6 @@ export const pacientesService = {
   },
 
   update(id, data) {
-    return api.put(`/api/patients/${id}`, data).then(res => res.data);
+    return api.put(`/patients/${id}`, data).then(res => res.data);
   }
 };

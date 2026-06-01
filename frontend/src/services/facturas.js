@@ -6,7 +6,7 @@ export const facturasService = {
   },
 
   createFacturaPaciente(consultationId) {
-    return api.post(`/api/invoices/patient/${consultationId}`).then(res => res.data);
+    return api.post(`/invoices/patient/${consultationId}`).then(res => res.data);
   },
 
   getARS() {
@@ -18,12 +18,12 @@ export const facturasService = {
   },
 
   async generarReporteARS(year, month) {
-    const response = await api.post(`/api/invoices/ars/generar-reporte?year=${year}&month=${month}`);
+    const response = await api.post(`/invoices/ars/generar-reporte?year=${year}&month=${month}`);
     return response.data;
   }, // ← Agrega esta coma
 
   getDashboard(mes) {
     const params = mes ? `?mes=${mes}` : '';
-    return api.get(`/api/dashboard${params}`).then(res => res.data);
+    return api.get(`/dashboard${params}`).then(res => res.data);
   }
 };
