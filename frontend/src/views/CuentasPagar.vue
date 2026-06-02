@@ -163,7 +163,7 @@ const getEstadoSeverity = (estado) => {
 const loadPayables = async () => {
   loading.value = true;
   try {
-    const response = await api.get('/api/accounting/payables/pendientes');
+    const response = await api.get('/accounting/payables/pendientes');
     payables.value = response.data;
   } catch (error) {
     console.error('Error al cargar cuentas por pagar:', error);
@@ -184,7 +184,7 @@ const abrirModalNuevo = () => {
 const crearPayable = async () => {
   saving.value = true;
   try {
-    await api.post('/api/accounting/payables', {
+    await api.post('/accounting/payables', {
       proveedorId: 0,  // ← ID temporal
       proveedorNombre: nuevoPayable.value.proveedorNombre,
       documento: nuevoPayable.value.documento,
@@ -211,7 +211,7 @@ const abrirModalPago = (payable) => {
 const registrarPago = async () => {
   saving.value = true;
   try {
-    await api.post('/api/accounting/payables/pagos', {
+    await api.post('/accounting/payables/pagos', {
       payableId: selectedPayable.value.id,
       monto: pago.value.monto,
       metodoPago: pago.value.metodoPago,

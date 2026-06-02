@@ -68,7 +68,7 @@ const loadLedger = async () => {
   try {
     const inicio = fechaInicio.value.toISOString().split('T')[0];
     const fin = fechaFin.value.toISOString().split('T')[0];
-    const response = await api.get(`/api/accounting/ledger?inicio=${inicio}&fin=${fin}`);
+    const response = await api.get(`/accounting/ledger?inicio=${inicio}&fin=${fin}`);
     entries.value = response.data;
   } catch (error) {
     console.error('Error al cargar libro diario:', error);

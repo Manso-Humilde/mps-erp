@@ -61,7 +61,7 @@ const formatNumber = (value) => value?.toFixed(2) || '0.00';
 const loadData = async () => {
   loading.value = true;
   try {
-    const response = await api.get('/api/accounting/balance-general');
+    const response = await api.get('/accounting/balance-general');
     items.value = response.data;
 
     for (const item of response.data) {

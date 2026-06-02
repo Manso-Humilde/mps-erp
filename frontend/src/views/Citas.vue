@@ -248,7 +248,7 @@ const loadCitas = async () => {
   loading.value = true;
   try {
     const now = new Date();
-    const response = await api.get('/api/appointments', {
+    const response = await api.get('/appointments', {
       params: {
         year: now.getFullYear(),
         month: now.getMonth() + 1
@@ -264,7 +264,7 @@ const loadCitas = async () => {
 
 const loadPacientes = async () => {
   try {
-    const response = await api.get('/api/patients');
+    const response = await api.get('/patients');
     pacientes.value = response.data;
   } catch (error) {
     console.error('Error al cargar pacientes:', error);
@@ -273,7 +273,7 @@ const loadPacientes = async () => {
 
 const loadTiposServicio = async () => {
   try {
-    const response = await api.get('/api/service-types');
+    const response = await api.get('/service-types');
     tiposServicio.value = response.data;
   } catch (error) {
     console.error('Error al cargar tipos de servicio:', error);

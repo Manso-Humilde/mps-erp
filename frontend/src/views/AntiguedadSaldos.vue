@@ -56,7 +56,7 @@ const getSeveridad = (rango) => {
 const loadData = async () => {
   loading.value = true;
   try {
-    const response = await api.get('/api/accounting/receivables/antiguedad');
+    const response = await api.get('/accounting/receivables/antiguedad');
     items.value = response.data;
   } catch (error) {
     console.error('Error al cargar datos:', error);

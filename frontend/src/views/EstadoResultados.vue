@@ -59,7 +59,7 @@ const loadData = async () => {
   try {
     const inicio = fechaInicio.value.toISOString().split('T')[0];
     const fin = fechaFin.value.toISOString().split('T')[0];
-    const response = await api.get(`/api/accounting/estado-resultados?inicio=${inicio}&fin=${fin}`);
+    const response = await api.get(`/accounting/estado-resultados?inicio=${inicio}&fin=${fin}`);
 
     for (const item of response.data) {
       if (item.tipo === 'INGRESO') ingresos.value = item.monto;

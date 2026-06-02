@@ -215,7 +215,7 @@ const loadPacientes = async () => {
 
 const loadTiposServicio = async () => {
   try {
-    const response = await api.get('/api/service-types');
+    const response = await api.get('/service-types');
     tiposServicio.value = response.data;
     console.log('Tipos de servicio cargados:', tiposServicio.value);
   } catch (error) {

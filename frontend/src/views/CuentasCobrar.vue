@@ -161,14 +161,14 @@ const getEstadoSeverity = (estado) => {
 const loadReceivables = async () => {
   loading.value = true;
   try {
-    const response = await api.get('/api/accounting/receivables/pendientes');
+    const response = await api.get('/accounting/receivables/pendientes');
     // Enriquecer con nombres
     for (const item of response.data) {
       if (item.tipo === 'PACIENTE') {
-        const paciente = await api.get(`/api/patients/${item.terceroId}`);
+        const paciente = await api.get(`/patients/${item.terceroId}`);
         item.terceroNombre = paciente.data.nombreCompleto;
       } else if (item.tipo === 'ARS') {
-        const ars = await api.get(`/api/ars/${item.terceroId}`);
+        const ars = await api.get(`/ars/${item.terceroId}`);
         item.terceroNombre = ars.data.nombre;
       }
     }
@@ -207,7 +207,7 @@ const registrarPago = async () => {
       observaciones: pago.value.observaciones
     });
 
-    await api.post('/api/accounting/payments', {
+    await api.post('/accounting/payments', {
       receivableId: selectedReceivable.value.id,
       monto: pago.value.monto,
       metodoPago: pago.value.metodoPago,

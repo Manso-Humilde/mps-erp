@@ -277,7 +277,7 @@ const loadPacientes = async () => {
 
 const loadARS = async () => {
   try {
-    const response = await api.get('/api/ars');
+    const response = await api.get('/ars');
     arsList.value = response.data;
   } catch (error) {
     console.error('Error al cargar ARS:', error);
