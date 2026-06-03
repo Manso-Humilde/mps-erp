@@ -27,8 +27,9 @@ public class WebConfig implements WebMvcConfigurer {
                 .maxAge(3600);
     }
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(tenantFilterInterceptor);
-    }
+    //Posiblemente lo necesite más adelante
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//        registry.addInterceptor(tenantFilterInterceptor);
+//    }
 }

@@ -33,7 +33,7 @@ public class AuthController {
             cookie.setSecure(true);
             cookie.setPath("/");
             cookie.setMaxAge(86400);  // 24 horas
-            cookie.setAttribute("SameSite", "Lax");  // ← Agrega esto
+            cookie.setAttribute("SameSite", "None");  // ← Agrega esto
             response.addCookie(cookie);
 
             // Retornar respuesta sin token (para no exponerlo)
