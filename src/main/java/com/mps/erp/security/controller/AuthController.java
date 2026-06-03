@@ -7,6 +7,8 @@ import com.mps.erp.security.service.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+// ✅ CORRECTO - Esta es la interfaz de Spring Security
+import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,8 +66,16 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/hash")
-    public String hash(@RequestParam String pass) {
-        return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode(pass);
+    @GetMapping("/verify")
+    public ResponseEntity<?> verify(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("No autenticado");
+        }
+        return ResponseEntity.ok(authentication.getName());
     }
+
+//    @GetMapping("/hash")
+//    public String hash(@RequestParam String pass) {
+//        return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode(pass);
+//    }
 }

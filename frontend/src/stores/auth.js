@@ -28,12 +28,6 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('user')
   }
 
-  function logout() {
-    clearAuth()
-    // Redirigir al login si es necesario
-    window.location.href = '/login'
-  }
-
   async function login(credentials) {
     loading.value = true;
     try {
@@ -50,14 +44,22 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  // checkAuth debe verificar con el servidor, no solo leer localStorage
   async function checkAuth() {
-    //const storedToken = localStorage.getItem('token')
-    const storedUser = localStorage.getItem('user')
+      const storedUser = localStorage.getItem('user')
+      if (!storedUser) return
 
-    if (storedToken && storedUser) {
-      //token.value = storedToken
-      user.value = JSON.parse(storedUser)
-    }
+      try {
+          user.value = JSON.parse(storedUser)
+          // VERIFICAR con el servidor que la sesión es válida
+          await api.get('/auth/verify')
+      } catch (error) {
+          // Token inválido o expirado → limpiar todo
+          user.value = null
+          token.value = null
+          localStorage.removeItem('user')
+          localStorage.removeItem('token')
+      }
   }
 
   function logout() {
