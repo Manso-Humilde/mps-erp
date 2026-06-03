@@ -477,9 +477,19 @@ body {
 /* Responsive - Tablets */
 @media (max-width: 1024px) {
   .sidebar {
-    width: 80px;
-    padding: 1rem 0.5rem;
-  }
+      width: 80px;
+      padding: 1rem 0.5rem;
+      min-height: 0;           /* ← AGREGA: por consistencia */
+    }
+
+    /* Ocultar contabilidad submenu en sidebar colapsado */
+    .submenu {
+      display: none;           /* ← AGREGA: submenu no cabe en 80px */
+    }
+
+    .menu-item.has-submenu i:last-child {
+      display: none;           /* ← Ocultar chevron */
+    }
 
   .logo-text {
     font-size: 0;
@@ -549,29 +559,39 @@ body {
     flex-direction: row;
     padding: 0.5rem;
     height: auto;
+    min-height: 0;
     position: sticky;
     top: 0;
     z-index: 100;
   }
 
-  .logo-text:before {
-    content: "MPS";
-    font-size: 1rem;
-  }
+  .logo {
+      display: none;
+    }
 
   .menu {
-    display: flex;
-    flex: 1;
-    justify-content: space-around;
-    margin: 0;
-  }
+      display: flex;
+      flex: 1;
+      justify-content: flex-start;     /* ← CAMBIA de space-around a flex-start */
+      margin: 0;
+      overflow-x: auto;               /* ← AGREGA: scroll horizontal si desborda */
+      gap: 0.5rem;                    /* ← AGREGA: espacio entre items */
+      -webkit-overflow-scrolling: touch;
+    }
 
-  .menu-item {
-    flex-direction: column;
-    align-items: center;
-    padding: 0.5rem;
-    font-size: 0.7rem;
-  }
+    /* Ocultar scrollbar en mobile */
+    .menu::-webkit-scrollbar {
+      display: none;
+    }
+
+   .menu-item {
+      flex-direction: column;
+      align-items: center;
+      padding: 0.5rem;
+      font-size: 0.7rem;
+      flex-shrink: 0;           /* ← AGREGA: items no se encogen */
+      min-width: 55px;          /* ← AGREGA: ancho mínimo para cada item */
+    }
 
   .menu-item i {
     font-size: 1.2rem;
@@ -581,13 +601,14 @@ body {
     display: none;
   }
 
-  .logout-btn {
-    flex-direction: column;
-    align-items: center;
-    padding: 0.5rem;
-    margin-top: 0;
-    border-top: none;
-  }
+ .logout-btn {
+     flex-direction: column;
+     align-items: center;
+     padding: 0.5rem;
+     margin-top: 0;
+     border-top: none;
+     flex-shrink: 0;
+   }
 
   .logout-btn span {
     font-size: 0.7rem;
