@@ -28,6 +28,12 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('user')
   }
 
+  function logout() {
+    clearAuth()
+    // Redirigir al login si es necesario
+    window.location.href = '/login'
+  }
+
   async function login(credentials) {
     loading.value = true;
     try {
@@ -45,11 +51,11 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function checkAuth() {
-    const storedToken = localStorage.getItem('token')
+    //const storedToken = localStorage.getItem('token')
     const storedUser = localStorage.getItem('user')
 
     if (storedToken && storedUser) {
-      token.value = storedToken
+      //token.value = storedToken
       user.value = JSON.parse(storedUser)
     }
   }
