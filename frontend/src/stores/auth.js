@@ -50,11 +50,12 @@ export const useAuthStore = defineStore('auth', () => {
       if (!storedUser) return
 
       try {
-          user.value = JSON.parse(storedUser)
-          // VERIFICAR con el servidor que la sesión es válida
+          // ✅ PRIMERO verificar con el servidor que el JWT sigue siendo válido
           await api.get('/auth/verify')
+          // ✅ Solo si el servidor responde 200, establecer el usuario como autenticado
+          user.value = JSON.parse(storedUser)
       } catch (error) {
-          // Token inválido o expirado → limpiar todo
+          // Token inválido, expirado o no existe → limpiar todo
           user.value = null
           token.value = null
           localStorage.removeItem('user')

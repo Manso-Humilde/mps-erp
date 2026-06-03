@@ -63,8 +63,8 @@ import { useAuthStore } from '../stores/auth';
 const router = useRouter();
 const authStore = useAuthStore();
 
-const email = ref('test@test');
-const password = ref('test');
+const email = ref('');
+const password = ref('');
 const loading = ref(false);
 const error = ref('');
 
