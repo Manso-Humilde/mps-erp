@@ -239,7 +239,7 @@ const loading = ref(false);
 const saving = ref(false);
 const showFormDialog = ref(false);
 const showViewDialog = ref(false);
- <!-- const filters = ref({}); -->
+
 const isEditing = ref(false);
 const editingId = ref(null);
 const viewPatientData = ref({});
