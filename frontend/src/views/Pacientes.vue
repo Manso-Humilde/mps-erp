@@ -239,10 +239,15 @@ const loading = ref(false);
 const saving = ref(false);
 const showFormDialog = ref(false);
 const showViewDialog = ref(false);
-const filters = ref({});
+ <!-- const filters = ref({}); -->
 const isEditing = ref(false);
 const editingId = ref(null);
 const viewPatientData = ref({});
+
+const filters = ref({
+  global: { value: null, matchMode: 'contains' },
+  nombreCompleto: { value: null, matchMode: 'contains' }
+});
 
 const tiposIdentificacion = ref([
   { name: 'RNC', displayName: 'RNC' },
