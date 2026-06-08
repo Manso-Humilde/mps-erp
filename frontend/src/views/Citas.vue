@@ -297,7 +297,7 @@ const saveCita = async () => {
       notas: form.value.notas
     };
 
-    await api.post('/api/appointments', payload);
+    await api.post('/appointments', payload);
 
     showFormDialog.value = false;
     resetForm();
@@ -329,7 +329,7 @@ const marcarNoAsistio = (cita) => {
   confirmMessage.value = `¿Marcar como "No Asistió" la cita de ${cita.patientName}?`;
   confirmActionFn.value = async () => {
     try {
-      await api.put(`/api/appointments/${cita.id}/status?status=NO_ASISTIO`);
+      await api.put(`/appointments/${cita.id}/status?status=NO_ASISTIO`);
       await loadCitas();
       showConfirmDialog.value = false;
     } catch (error) {
@@ -344,7 +344,7 @@ const cancelarCita = (cita) => {
   confirmMessage.value = `¿Cancelar cita de ${cita.patientName}?`;
   confirmActionFn.value = async () => {
     try {
-      await api.put(`/api/appointments/${cita.id}/status?status=CANCELADA`);
+      await api.put(`/appointments/${cita.id}/status?status=CANCELADA`);
       await loadCitas();
       showConfirmDialog.value = false;
     } catch (error) {
