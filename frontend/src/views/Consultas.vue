@@ -257,7 +257,7 @@ const saveConsulta = async () => {
     // Si viene de una cita, actualizar la cita con el ID de consulta
     if (appointmentId.value) {
       try {
-        await api.put(`/api/appointments/${appointmentId.value}/consultation`, {
+        await api.put(`/appointments/${appointmentId.value}/consultation`, {
           consultationId: consultation.id
         });
       } catch (error) {
@@ -303,7 +303,7 @@ const closeDialog = () => {
 const generarFactura = async (consulta) => {
   try {
     const invoice = await facturasService.createFacturaPaciente(consulta.id);
-    window.open(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/invoices/patient/${invoice.id}/pdf`, '_blank');
+    window.open(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/invoices/patient/${invoice.id}/pdf`, '_blank');
     await loadConsultas();
   } catch (error) {
     console.error('Error al generar factura:', error);
