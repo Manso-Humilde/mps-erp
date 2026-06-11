@@ -303,7 +303,7 @@ const closeDialog = () => {
 const generarFactura = async (consulta) => {
   try {
     const invoice = await facturasService.createFacturaPaciente(consulta.id);
-    window.open(`/invoices/patient/${invoice.id}/pdf`, '_blank');
+    window.open(`https://mps-erp.onrender.com/invoices/patient/${invoice.id}/pdf`, '_blank');
     await loadConsultas();
   } catch (error) {
     console.error('Error al generar factura:', error);
